@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DebugPal AI — Visual Socratic C/C++ Pointer & Memory Tutor</title>
+  <meta name="description" content="An offline-first, open-weight Socratic code tutor that visually explains C/C++ pointers, segmentation faults, and memory leaks for CS students.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Header / Nav -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="logo-icon">
+        <span class="logo-sym">&gt;_</span>
+      </div>
+      <div>
+        <div class="brand-title">DebugPal <span class="badge-ai">AI</span></div>
+        <div class="brand-subtitle">Visual Socratic Pointer &amp; Memory Tutor</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <div class="status-pill" id="aiStatusPill" title="Connected local open-weight model status">
+        <span class="status-dot"></span>
+        <span id="aiStatusText">Local Heuristic + Gemma 2</span>
+      </div>
+
+      <button class="btn btn-secondary" id="btnModelSettings" title="Configure AI Model and Ollama Endpoint">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Model</span>
+      </button>
+
+      <button class="btn btn-secondary" id="btnExportReport" title="Export Debug Analysis">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Export</span>
+      </button>
+
+      <a href="https://github.com" target="_blank" id="githubLink" class="btn btn-ghost" title="GitHub Repository">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero / Introduction banner -->
+  <section class="hero-strip">
+    <div class="hero-content">
+      <div class="hero-tag">🎓 Built for 3rd Sem CS Lab Survival</div>
+      <h1 class="hero-title">Stop Dreading <code>Segmentation fault (core dumped)</code></h1>
+      <p class="hero-desc">
+        DebugPal doesn't just hand you the answer. It draws the <strong>exact Stack &amp; Heap memory layout</strong>, 
+        asks <strong>Socratic questions</strong> to help you spot your pointer bug, and explains low-level concepts with <strong>real-world analogies</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Workstation Layout -->
+  <main class="workspace-grid">
+    <!-- Left Column: Code Editor & Presets -->
+    <section class="panel editor-panel">
+      <div class="panel-header">
+        <div class="panel-title-group">
+          <span class="dot-indicator green"></span>
+          <span class="panel-title">Source Code</span>
+          <span class="file-chip">main.c</span>
+        </div>
+        <div class="editor-actions">
+          <button class="btn-sm btn-ghost" id="btnClearCode" title="Clear Code">Clear</button>
+          <button class="btn-sm btn-ghost" id="btnCopyCode" title="Copy Code">Copy</button>
+        </div>
+      </div>
+
+      <!-- Bug Presets Toolbar -->
+      <div class="presets-bar">
+        <span class="preset-label">Lab Presets:</span>
+        <button class="preset-btn active" data-preset="linked-list-segfault" title="NULL dereference during node traversal">
+          ⚡ Linked List Segfault
+        </button>
+        <button class="preset-btn" data-preset="dangling-pointer" title="Accessing stack memory after function return">
+          👻 Dangling Pointer
+        </button>
+        <button class="preset-btn" data-preset="memory-leak" title="Allocation in loop without free()">
+          💧 Memory Leak (2D Matrix)
+        </button>
+        <button class="preset-btn" data-preset="buffer-overflow" title="Off-by-one array index boundary error">
+          💥 Buffer Overflow
+        </button>
+      </div>
+
+      <!-- Code Area Container -->
+      <div class="code-container">
+        <div class="line-numbers" id="lineNumbers">1<br>2<br>3<br>4<br>5</div>
+        <textarea id="codeEditor" spellcheck="false" placeholder="// Paste your C/C++ or data structures code here..."></textarea>
+      </div>
+
+      <!-- Execution / Trigger Footer -->
+      <div class="panel-footer">
+        <div class="language-select-wrapper">
+          <label for="langSelect">Language:</label>
+          <select id="langSelect">
+            <option value="c" selected>C (GCC 11)</option>
+            <option value="cpp">C++ (G++ 17)</option>
+            <option value="python">Python 3</option>
+            <option value="rust">Rust</option>
+          </select>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="btnAnalyze">
+            <svg class="spin-icon hidden" id="analyzeSpinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-linecap="round"></circle>
+            </svg>
+            <span id="analyzeBtnText">Inspect Memory &amp; Debug</span>
+            <kbd class="kbd-hint">Ctrl+Enter</kbd>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Socratic Visual Diagnosis Workspace -->
+    <section class="panel visualizer-panel">
+      <!-- Tab Header Navigation -->
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="tab-memory">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
+          Visual Memory Map
+        </button>
+        <button class="tab-btn" data-tab="tab-socratic">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Socratic Guidance
+        </button>
+        <button class="tab-btn" data-tab="tab-analogy">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+          Everyday Analogy
+        </button>
+        <button class="tab-btn" data-tab="tab-fix">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Safe Patch &amp; Diff
+        </button>
+      </div>
+
+      <!-- Tab 1: Visual Memory Map -->
+      <div class="tab-content active" id="tab-memory">
+        <div class="memory-summary-bar">
+          <div class="mem-stat">
+            <span class="stat-lbl">Bug Classification</span>
+            <span class="stat-val text-red" id="bugTypeTag">NULL Pointer Dereference</span>
+          </div>
+          <div class="mem-stat">
+            <span class="stat-lbl">Crash Point</span>
+            <span class="stat-val" id="crashLineTag">Line 18</span>
+          </div>
+          <div class="mem-stat">
+            <span class="stat-lbl">Memory Health</span>
+            <span class="stat-val text-yellow" id="leakStatusTag">Critical Invariant Violation</span>
+          </div>
+        </div>
+
+        <div class="memory-diagram-container">
+          <!-- Stack Memory Column -->
+          <div class="mem-column">
+            <div class="mem-column-header">
+              <span class="col-icon">🥞</span>
+              <span class="col-name">Call Stack (Local Frames)</span>
+              <span class="col-sub">High Address: <code>0x7ffd98a0</code></span>
+            </div>
+            <div class="mem-blocks-list" id="stackBlockList">
+              <!-- Dynamically Populated Stack Frames -->
+            </div>
+          </div>
+
+          <!-- Heap Memory Column -->
+          <div class="mem-column">
+            <div class="mem-column-header">
+              <span class="col-icon">📦</span>
+              <span class="col-name">Heap (Dynamic Allocations)</span>
+              <span class="col-sub">Low Address: <code>0x00501000</code></span>
+            </div>
+            <div class="mem-blocks-list" id="heapBlockList">
+              <!-- Dynamically Populated Heap Blocks -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Pointer Traversal Timeline -->
+        <div class="pointer-timeline">
+          <div class="timeline-title">🎯 Pointer Execution Timeline (What Happened Right Before the Crash):</div>
+          <ol class="timeline-steps" id="timelineList">
+            <!-- Dynamically populated steps -->
+          </ol>
+        </div>
+      </div>
+
+      <!-- Tab 2: Socratic Guidance (3-Tier Progressive Hints) -->
+      <div class="tab-content" id="tab-socratic">
+        <div class="socratic-container">
+          <div class="socratic-intro">
+            <h3>🤔 Socratic Invariant Discovery</h3>
+            <p>Don't look at the solution immediately! Step through these 3 guided questions to understand <em>why</em> this bug occurs so you'll never make it again on an exam.</p>
+          </div>
+
+          <!-- Hint Tier 1 -->
+          <div class="hint-card" id="hintCard1">
+            <div class="hint-card-header">
+              <span class="hint-badge level-1">Step 1: The Observation</span>
+              <button class="hint-toggle-btn" id="btnRevealHint1">Show Observation</button>
+            </div>
+            <div class="hint-body hidden" id="hintBody1">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Hint Tier 2 -->
+          <div class="hint-card" id="hintCard2">
+            <div class="hint-card-header">
+              <span class="hint-badge level-2">Step 2: The Invariant Check</span>
+              <button class="hint-toggle-btn" id="btnRevealHint2">Ask Guiding Question</button>
+            </div>
+            <div class="hint-body hidden" id="hintBody2">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Hint Tier 3 -->
+          <div class="hint-card" id="hintCard3">
+            <div class="hint-card-header">
+              <span class="hint-badge level-3">Step 3: The Lightbulb Reveal</span>
+              <button class="hint-toggle-btn" id="btnRevealHint3">Reveal Root Cause</button>
+            </div>
+            <div class="hint-body hidden" id="hintBody3">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Everyday Analogy -->
+      <div class="tab-content" id="tab-analogy">
+        <div class="analogy-card">
+          <div class="analogy-badge">💡 Real-World Mental Model</div>
+          <h2 class="analogy-headline" id="analogyTitle">The Airbnb Key After Checkout</h2>
+          <div class="analogy-illustration" id="analogyVisual">
+            🗝️ ➡️ 🚪❌
+          </div>
+          <p class="analogy-narrative" id="analogyStory">
+            Imagine renting an Airbnb for the weekend. On Monday morning, you checkout and the host cleans the room. 
+            However, you secretly made a copy of the front door key. On Tuesday night, you try to unlock the apartment door with your old key and walk in to sleep on the bed.
+          </p>
+          <div class="analogy-lesson">
+            <strong>Why this relates to C pointers:</strong>
+            <p id="analogyMoral">
+              In C, <code>free(ptr)</code> returns ownership of the memory back to the operating system, but the variable <code>ptr</code> still holds the old address! Dereferencing a freed pointer is like trespassing with an old key — it may crash immediately (segfault), or worse, silently corrupt whatever data now lives there.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Safe Patch & Diff -->
+      <div class="tab-content" id="tab-fix">
+        <div class="fix-container">
+          <div class="fix-header">
+            <h3>🛡️ Defensive Code Patch &amp; Best Practice</h3>
+            <p>Compare the vulnerable code against the memory-safe implementation:</p>
+          </div>
+
+          <div class="diff-view">
+            <div class="diff-block diff-before">
+              <div class="diff-bar red-bar">❌ Vulnerable (Crashes / Leaks)</div>
+              <pre><code id="diffBeforeCode"></code></pre>
+            </div>
+            <div class="diff-block diff-after">
+              <div class="diff-bar green-bar">✅ Safe (Guarded &amp; Cleaned)</div>
+              <pre><code id="diffAfterCode"></code></pre>
+            </div>
+          </div>
+
+          <div class="fix-checklist">
+            <h4>Rule of Thumb Checklist to Avoid This:</h4>
+            <ul id="fixChecklist">
+              <li>Always check if pointer is non-NULL before dereferencing: <code>if (ptr != NULL)</code></li>
+              <li>Immediately set pointer to NULL after freeing: <code>free(ptr); ptr = NULL;</code></li>
+              <li>Pair every <code>malloc()</code> with an explicit <code>free()</code> along every return path.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Model Settings Modal -->
+  <div class="modal-backdrop hidden" id="modelModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚙️ Open-Weight Model Configuration</h3>
+        <button class="btn-close" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          DebugPal connects to local open-source LLMs running through <strong>Ollama</strong> or any OpenAI-compatible server. Zero cloud API costs, 100% offline student privacy.
+        </p>
+
+        <div class="form-group">
+          <label for="ollamaEndpoint">Ollama API Endpoint:</label>
+          <input type="text" id="ollamaEndpoint" value="http://localhost:11434/api/generate">
+          <span class="form-help">Default local endpoint for Ollama daemon</span>
+        </div>
+
+        <div class="form-group">
+          <label for="modelName">Local Model Name:</label>
+          <select id="modelName">
+            <option value="gemma2:2b" selected>Google Gemma 2 (2B) — Fast &amp; Light (Recommended)</option>
+            <option value="llama3.2:3b">Meta Llama 3.2 (3B)</option>
+            <option value="qwen2.5-coder:1.5b">Qwen 2.5 Coder (1.5B)</option>
+            <option value="codellama:7b">CodeLlama (7B)</option>
+            <option value="heuristic">Built-in Semantic Rule Engine (Offline No-GPU Fallback)</option>
+          </select>
+        </div>
+
+        <div class="test-connection-box">
+          <button class="btn btn-secondary" id="btnTestOllama">Test Ollama Connection</button>
+          <span id="testResult" class="test-feedback"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnSaveModal">Save Configuration</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
